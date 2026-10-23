@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,66 +7,77 @@
     <script src="https://cdn.tailwindcss.com"></script> 
     <link rel="stylesheet" href="D-Day.css">
 </head>
-<body class="font-zelda">
+<body class="font-zelda overflow-x-hidden">
     <header class="z-[60] sticky top-0">
-        <nav class="relative z-[60] flex items-center justify-between backdrop-filter backdrop-blur-md bg-opacity-40 px-[90px] h-[90px]">
-            <div class="flex flex-row items-center gap-[60px]">
-                <img class="h-14 w-auto" src="images/navbar/navbar-logo.svg" alt="home">
-                <ul class="flex flex-row gap-[64px] text-[2rem] text-white">
+        <nav class="relative z-[60] flex items-center justify-between backdrop-filter backdrop-blur-md bg-black/40 px-4 md:px-8 xl:px-[90px] h-[70px] xl:h-[90px]">
+            <div class="flex flex-row items-center gap-6 xl:gap-[60px]">
+                <img class="h-10 xl:h-14 w-auto" src="images/navbar/navbar-logo.svg" alt="home">
+                <!-- Menu desktop (laptop besar) -->
+                <ul class="hidden xl:flex flex-row gap-[64px] text-[2rem] text-white">
                     <a class="hover:underline hover:text-[#f3B641]" href="#hero">
                         Home
                     </a>
-                    <a class="hover:underline hover:text-[#f3B641]" href="#About Me">
+                    <a class="hover:underline hover:text-[#f3B641]" href="#aboutme">
                         About Me
                     </a>
-                    <a class="hover:underline hover:text-[#f3B641]" href="#My Skills">
+                    <a class="hover:underline hover:text-[#f3B641]" href="#myskills">
                         My Skills
                     </a>
-                    <a class="hover:underline hover:text-[#f3B641]" href="#My Experience">
+                    <a class="hover:underline hover:text-[#f3B641]" href="#experience">
                         My Experience
                     </a>
 
                 </ul>
             </div>
-            <div class="'flex flex-row items-center gap-3">
-                <div class="flex flex-row items-center gap-[15px]">
+            <div class="flex flex-row items-center gap-3">
+                <div class="flex flex-row items-center gap-2 md:gap-[15px]">
                     <a class="transition duration-200 ease-in-out hover:grayscale hover:opacity-70" href="https://x.com/HMSI_ITS" target="_blank">
-                        <img class="w-11" src="/images/navbar/x-logo.svg" alt="x">
+                        <img class="w-7 md:w-9 xl:w-11" src="images/navbar/x-logo.svg" alt="x">
                     </a>
-                    <a class="transition duration-200 ease-in-out hover:grayscale hover:opacity-70" href="www.tiktok.com/@hmsi_its" target="_blank">
-                        <img class="w-11" src="/images/navbar/tiktok-logo.svg" alt="TikTok">
+                    <a class="transition duration-200 ease-in-out hover:grayscale hover:opacity-70" href="https://www.tiktok.com/@hmsi_its" target="_blank">
+                        <img class="w-7 md:w-9 xl:w-11" src="images/navbar/tiktok-logo.svg" alt="TikTok">
                     </a>
                     <a class="transition duration-200 ease-in-out hover:grayscale hover:opacity-70" href="https://www.instagram.com/hmsi_its" target="_blank">
-                        <img class="w-11" src="/images/navbar/ig-logo.svg" alt="Instagram">
+                        <img class="w-7 md:w-9 xl:w-11" src="images/navbar/ig-logo.svg" alt="Instagram">
                     </a>
                     <a class="transition duration-200 ease-in-out hover:grayscale hover:opacity-70" href="https://youtube.com/@layarHMSI" target="_blank">
-                        <img class="w-11" src="/images/navbar/yt-logo.svg" alt="YouTube">
+                        <img class="w-7 md:w-9 xl:w-11" src="images/navbar/yt-logo.svg" alt="YouTube">
                     </a>
                 </div>
+                <!-- Tombol menu (HP & tablet) -->
+                <button id="menu-btn" class="xl:hidden text-white text-[2rem] leading-none ml-1" aria-label="Menu" aria-expanded="false">&#9776;</button>
             </div>
 
+            <!-- Menu dropdown (HP & tablet) -->
+            <div id="mobile-menu" class="hidden xl:hidden absolute top-full left-0 w-full bg-black/90 backdrop-blur-md">
+                <div class="flex flex-col items-center gap-4 py-6 text-[1.5rem] text-white">
+                    <a class="hover:underline hover:text-[#f3B641]" href="#hero">Home</a>
+                    <a class="hover:underline hover:text-[#f3B641]" href="#aboutme">About Me</a>
+                    <a class="hover:underline hover:text-[#f3B641]" href="#myskills">My Skills</a>
+                    <a class="hover:underline hover:text-[#f3B641]" href="#experience">My Experience</a>
+                </div>
+            </div>
         </nav>
     </header>
 
-    </header>
     <main class="bg-black text-white">
         <!-- Section 1 - Hero -->
-        <section id="hero" class="bg-[red] text-center py-100px">
-            <h1 class="font-zelda text-center text-[128px]">My Portfolio</h1>
-            <p class="px-[100px] text-[32px]">Fadilah Alifia</p>
+        <section id="hero" class="bg-[red] text-center py-[60px] md:py-[100px]">
+            <h1 class="font-zelda text-center text-[48px] sm:text-[80px] lg:text-[128px] leading-tight">My Portfolio</h1>
+            <p class="px-4 md:px-[100px] text-[20px] md:text-[32px]">Fadilah Alifia</p>
         </section>
         <!-- Section 2 - About Me -->
-        <section>
-            <h2 class="font-zelda text-center text-[80px]">About Me</h2>
-            <p class="px-[100px] text-center text-[32px]">Halo, nama aku Fadilah Alifia. Kalian bisa panggil aku Lifi.</p>
+        <section id="aboutme" class="scroll-mt-[70px] xl:scroll-mt-[90px] py-10 md:py-[60px]">
+            <h2 class="font-zelda text-center text-[40px] md:text-[60px] lg:text-[80px]">About Me</h2>
+            <p class="px-4 md:px-[100px] text-center text-[20px] md:text-[32px]">Halo, nama aku Fadilah Alifia. Kalian bisa panggil aku Lifi.</p>
         </section>
         <!-- Section 3 - My Skills -->
         
-        <section id="myskills " class="text-left w-[600px] mx-auto p-[60px]">
-            <h2 class="font-zelda text-center text-[80px]">My Skills</h2>
+        <section id="myskills" class="scroll-mt-[70px] xl:scroll-mt-[90px] text-left w-full max-w-[600px] mx-auto p-6 md:p-[60px]">
+            <h2 class="font-zelda text-center text-[40px] md:text-[60px] lg:text-[80px]">My Skills</h2>
             <div>           
-                <h3 class="font-zelda text-[48px]">Aku suka belajar:</h3>
-                <ul class="text-[32px]"list-inside list-disc>
+                <h3 class="font-zelda text-[28px] md:text-[48px]">Aku suka belajar:</h3>
+                <ul class="text-[20px] md:text-[32px] list-inside list-disc">
                     <li>Matematika</li>
                     <li>Bahasa Inggris</li>
                     <li>Biologi</li>
@@ -75,13 +86,15 @@
  
         </section>
         <!-- Section 4 - My Experience -->
-        <section id="experience" class="py-[100px]">
+        <section id="experience" class="scroll-mt-[70px] xl:scroll-mt-[90px] py-10 md:py-[100px]">
             <div>
-            <h2 class="font-zelda text-[128px] text-white text-shadow-[0_5px_0_#7a3d21] text-center">My Experience</h2>
-            <img src="images/fotoku/foto1.png" alt="Deskripsi Foto 1">
-            <img src="images/fotoku/foto2.png" alt="Deskripsi Foto 2">
-            <img src="images/fotoku/foto3.png" alt="Deskripsi Foto 3">
-            <img src="images/fotoku/foto4.png" alt="Deskripsi Foto 4">
+            <h2 class="font-zelda text-[40px] md:text-[80px] lg:text-[128px] leading-tight text-white [text-shadow:0_5px_0_#7a3d21] text-center">My Experience</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 px-4 md:px-8 xl:px-[90px] mt-8 md:mt-12">
+                <img class="w-full h-auto rounded-lg transition duration-300 hover:scale-105" src="images/fotoku/foto1.png" alt="Deskripsi Foto 1">
+                <img class="w-full h-auto rounded-lg transition duration-300 hover:scale-105" src="images/fotoku/foto2.png" alt="Deskripsi Foto 2">
+                <img class="w-full h-auto rounded-lg transition duration-300 hover:scale-105" src="images/fotoku/foto3.png" alt="Deskripsi Foto 3">
+                <img class="w-full h-auto rounded-lg transition duration-300 hover:scale-105" src="images/fotoku/foto4.png" alt="Deskripsi Foto 4">
+            </div>
             </div>
         </section>
 
@@ -90,19 +103,32 @@
     <footer class="w-full sm:h-[500px] md:h-[350px] lg:h-[600px] bg-[url('images/footer/bg-footer.png')] bg-cover bg-center px-4 py-8 lg:px-[90px]
         lg:py-[88px] lg:border-t-[20px] lg:border-[#7A3D21] flex justify-center items-center">
         <!--FRAME Parent-->
-        <div class="flex flex-col sm:w-full h-[440px] md:w-170 lg:w-full lg:h-full bg-[url('images/footer/frame-footer-mobile.png')] md:bg-[url('images/footer/frame-footer-desktop.png')] bg-center bg-contain bg-no-repeat px-6 py-10 lg:px-[20px] items-center justify-center">
+        <div class="flex flex-col w-full h-[440px] md:w-[680px] lg:w-full lg:h-full bg-[url('images/footer/frame-footer-mobile.png')] md:bg-[url('images/footer/frame-footer-desktop.png')] bg-center bg-contain bg-no-repeat px-6 py-10 lg:px-[20px] items-center justify-center">
             <!--NAVBAR -->
             <div class="flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-6"> 
-                <a class="text-[C07e4e] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#hero">Home</a>
-                <a class="text-[C07e4e] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#About Me">About Me</a>
-                <a class="text-[C07e4e] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#My Skills">My Skills</a>
-                <a class="text-[C07e4e] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#My Experience">My Experience</a>
+                <a class="text-[#C07e4e] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#hero">Home</a>
+                <a class="text-[#C07e4e] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#aboutme">About Me</a>
+                <a class="text-[#C07e4e] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#myskills">My Skills</a>
+                <a class="text-[#C07e4e] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#experience">My Experience</a>
             </div>
             <!--copyright-->
-            <p class="font-times font-bold text-[20px] text-[#F9DCB4] text-[15px] lg:text[20px] mt-4">&copy; SIMETRI HMSI ITS 2026</p>
+            <p class="font-times font-bold text-[#F9DCB4] text-[15px] lg:text-[20px] mt-4">&copy; SIMETRI HMSI ITS 2026</p>
         </div>
     </footer>
-    
-    
+
+    <script>
+        // Buka/tutup menu di HP & tablet
+        const btn = document.getElementById('menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        btn.addEventListener('click', () => {
+            const open = menu.classList.toggle('hidden') === false;
+            btn.setAttribute('aria-expanded', open);
+        });
+        // Tutup menu otomatis setelah salah satu link diklik
+        menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+            menu.classList.add('hidden');
+            btn.setAttribute('aria-expanded', false);
+        }));
+    </script>
 </body>
 </html>
