@@ -11,7 +11,16 @@
     <link rel="stylesheet" href="./D-Day.css">
 
     <style>
-        html, body { overflow-x: hidden; }
+        html, body { overflow-x: clip; }
+
+        /* Latar tetap: tinggi dikunci (lvh) supaya tidak zoom in/out saat address bar HP naik-turun */
+        .bg-fixed-layer {
+            position: fixed; top: 0; left: 0; width: 100%;
+            height: 100vh; height: 100lvh;
+            transform: translateZ(0); will-change: transform;
+            backface-visibility: hidden;
+        }
+        #bg-overlay { will-change: opacity; }
 
         /* Papan perkamen bawaan digambar via SVG (lihat script di bawah) */
         #plank.has-img svg.frame { display: none; }
@@ -107,10 +116,10 @@
     <main class="relative text-white">
 
         <!-- BACKGROUND (tetap, tidak ikut scroll) -->
-        <div class="fixed inset-0 -z-20 bg-cover bg-no-repeat bg-center bg-[url('images/hero/IGNIS.png')]"></div>
+        <div class="bg-fixed-layer -z-20 bg-cover bg-no-repeat bg-center bg-[url('images/hero/IGNIS.png')]"></div>
 
         <!-- OVERLAY GELAP (diatur JS saat scroll) -->
-        <div id="bg-overlay" class="fixed inset-0 -z-10 bg-black opacity-0 pointer-events-none"></div>
+        <div id="bg-overlay" class="bg-fixed-layer -z-10 bg-black opacity-0 pointer-events-none"></div>
 
         <!-- HERO -->
         <section id="hero"
@@ -177,7 +186,7 @@
                     About Me
                 </h2>
 
-                <p class="font-times text-[#F9DCB4] text-[1.1rem] md:text-[1.25rem] lg:text-[1.5rem] leading-snug">
+                <p class="font-times text-[#F9DCB4] text-[1.25rem] md:text-[1.35rem] lg:text-[1.5rem] leading-snug">
                     Halo, guys! Nama aku Fadilah Alifia Ramadhani. Kalian bisa panggil aku Lifi.
                 </p>
             </div>
@@ -217,11 +226,11 @@
                     class="block md:hidden absolute inset-0 w-full h-full object-fill pointer-events-none">
 
                 <div class="relative z-10 w-fit text-left">
-                    <h3 class="font-zelda text-[1.5rem] md:text-[2rem] lg:text-[2.5rem] leading-tight">
+                    <h3 class="font-zelda text-[2rem] md:text-[2.25rem] lg:text-[2.75rem] leading-tight">
                         Aku suka belajar:
                     </h3>
                     <ul class="font-zelda list-disc pl-8 mt-3 space-y-1
-                        text-[1.25rem] md:text-[1.75rem] lg:text-[2rem]">
+                        text-[1.75rem] md:text-[2rem] lg:text-[2.25rem]">
                         <li>Matematika</li>
                         <li>Bahasa Inggris</li>
                         <li>Biologi</li>
