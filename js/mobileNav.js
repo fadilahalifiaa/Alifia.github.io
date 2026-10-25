@@ -3,7 +3,7 @@
     const btn = document.getElementById('hamburgerBtn');
     const menu = document.getElementById('mobileMenu');
     const iconOpen = document.getElementById('iconHamburger');
-    const iconClose = document.getElementById('iconClose');
+    const iconClose = document.getElementById('closeIcon');
     if (!btn || !menu) return;
 
     function setOpen(open) {
