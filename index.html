@@ -1,261 +1,528 @@
 <!DOCTYPE html>
-<html class="scroll-smooth" lang="en"> 
+<html class="scroll-smooth" lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Portfolio</title>
-    <script src="https://cdn.tailwindcss.com"> </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="D-Day.css">
+
+    <style>
+        /* halaman tidak bisa geser ke samping di HP */
+        body { overflow-x: hidden; }
+
+        /* judul section tidak ketutup navbar saat diklik dari menu */
+        section { scroll-margin-top: 90px; }
+
+        /* gaya judul: putih, garis tepi coklat, bayangan di bawah */
+        .judul {
+            color: #fff;
+            text-transform: uppercase;
+            line-height: 1;
+            font-size: clamp(2.75rem, 11vw, 6rem);
+            -webkit-text-stroke: 1px #7A3D21;
+            text-shadow: 0 5px 0 #7A3D21;
+            transition: transform 0.3s;
+        }
+        .judul:hover { transform: scale(1.05); }
+        @media (min-width: 1024px) {
+            .judul { -webkit-text-stroke: 2px #7A3D21; text-shadow: 0 10px 0 #7A3D21; }
+        }
+
+        /* judul hero: jatuh masuk, lalu bersinar emas pelan-pelan */
+        .judul-hero { animation: masuk 1s ease-out backwards, cahaya 3s ease-in-out 1s infinite; }
+        @keyframes masuk { from { opacity: 0; transform: translateY(-50px) scale(0.9); } }
+        @keyframes cahaya { 50% { filter: drop-shadow(0 0 18px rgba(243, 182, 65, 0.6)); } }
+
+        /* elemen hero muncul satu per satu (delay diatur di HTML) */
+        .hero-muncul { animation: naik 0.8s ease-out backwards; }
+        @keyframes naik { from { opacity: 0; transform: translateY(30px); } }
+
+        /* elemen yang muncul pelan saat di-scroll (class "muncul" dipasang lewat JS) */
+        .muncul { opacity: 0; }
+        .muncul.tampil { opacity: 1; animation: naik 0.8s ease-out backwards; }
+
+        /* navbar: transparan di atas, lebih pekat dan blur setelah di-scroll */
+        #navbar {
+            background: rgba(0, 0, 0, 0.2);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+            transition: background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s;
+        }
+        #navbar.gulir {
+            background: rgba(26, 10, 5, 0.6);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* kartu aktivitas */
+        .aktivitas {
+            background: #592918;
+            border: 2px solid #7A3D21;
+            border-radius: 16px;
+            box-shadow: 0 6px 0 #3a1a0e;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .aktivitas:hover { transform: translateY(-4px); border-color: #F3B641; }
+
+        /* isi kartu membuka pelan-pelan */
+        .isi { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s; }
+        .buka .isi { grid-template-rows: 1fr; }
+        .isi > div { overflow: hidden; min-height: 0; }
+
+        /* teks kecil di atas gambar latar: diberi latar gelap tipis supaya jelas dibaca */
+        .teks-jelas {
+            background: rgba(26, 10, 5, 0.6);
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+            border-radius: 14px;
+            text-shadow: 0 1px 3px #000;
+        }
+        .panah { transition: transform 0.4s; }
+        .buka .panah { transform: rotate(180deg); }
+
+        /* ikon berubah emas saat kartu di-hover atau terbuka */
+        .ikon { --lat: #3a1a0e; transition: all 0.3s; }
+        .aktivitas:hover .ikon, .buka .ikon {
+            --lat: #F3B641;
+            background: #F3B641;
+            color: #592918;
+            transform: rotate(-6deg) scale(1.1);
+        }
+        .pisah { stroke: var(--lat); stroke-width: 2.5; } /* garis pemisah antar orang di ikon teman */
+
+        /* id card: melayang pelan dan bisa dibalik */
+        .kartu { perspective: 900px; cursor: pointer; animation: melayang 4s ease-in-out infinite; }
+        @keyframes melayang { 50% { translate: 0 -10px; } }
+        .kartu-dalam { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.7s; }
+        .kartu.terbalik .kartu-dalam { transform: rotateY(180deg); }
+        .sisi { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+        .belakang { transform: rotateY(180deg); }
+
+        /* kalau HP diatur "kurangi gerakan", animasi dimatikan */
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; transition: none !important; }
+        }
+    </style>
 </head>
 
 <body class="font-zelda">
-    <header class="z-[60] sticky top-0">
-        <nav class="relative z-[60] flex items-center justify-between
-         backdrop-filter backdrop-blur-md bg-opacity-40 md:px-16 sm:px-6 lg:px-[90px] h-[90px]">
-            <div class="flex flex-row items-center gap-16">
-                <img class="lg:h-14 sm:h-12 w-auto" src="./images/navbar/navbar-logo.svg" alt="Home">
 
-                <ul class="hidden lg:flex lg:flex-row gap-[64px] text-white text-[2rem]">
-                    <a class="hover:underline hover:text-[#F3B641]" href="#hero">
-                        Home</a>
-                    <a class="hover:underline hover:text-[#F3B641]" href="#aboutme">
-                        About Me</a>
-                    <a class="hover:underline hover:text-[#F3B641]" href="#myskills">
-                        My Skills</a>
-                    <a class="hover:underline hover:text-[#F3B641]" href="#experience">
-                        My Experience</a>
+    <!-- ===== NAVBAR: menempel di atas layar, jadi blur saat di-scroll ===== -->
+    <header class="fixed top-0 inset-x-0 z-[60]">
+        <nav id="navbar" class="relative z-[60] flex items-center justify-between px-4 md:px-16 lg:px-[90px] h-[90px]">
+
+            <!-- logo + menu desktop -->
+            <div class="flex items-center gap-16">
+                <a href="#hero"><img class="h-12 lg:h-14 w-auto" src="./images/navbar/navbar-logo.svg" alt="Home"></a>
+                <ul class="hidden lg:flex gap-[64px] text-white text-[2rem]">
+                    <li><a class="hover:underline hover:text-[#F3B641]" href="#hero">Home</a></li>
+                    <li><a class="hover:underline hover:text-[#F3B641]" href="#aboutme">About Me</a></li>
+                    <li><a class="hover:underline hover:text-[#F3B641]" href="#aktivitas">Activities</a></li>
+                    <li><a class="hover:underline hover:text-[#F3B641]" href="#experience">My Experience</a></li>
                 </ul>
             </div>
 
-            <div class="flex flex-row items-center gap-3">
-                <div class="hidden lg:flex lg:flex-row items-center gap-[15px]">
-                    <a href="https://x.com/HMSI_ITS" class="transition duration-200 
-                    ease-in-out hover:grayscale hover:opacity-70" target="_blank">
-                        <img class="w-11" src="./images/navbar/x-logo.svg" alt="X">
-                    </a>
-
-                    <a href="https://tiktok.com/@hmsi_its" class="transition duration-200 
-                    ease-in-out hover:grayscale hover:opacity-70" target="_blank">
-                        <img class="w-11" src="./images/navbar/tiktok-logo.svg" alt="tiktok">
-                    </a>
-
-                    <a href="https://instagram.com/simetri.hmsiits" class="transition duration-200 
-                    ease-in-out hover:grayscale hover:opacity-70" target="_blank">
-                        <img class="w-11" src="./images/navbar/ig-logo.svg" alt="instagram">
-                    </a>
-                    <a href="https://youtube.com/@layarHMSI" class="transition duration-200 
-                    ease-in-out hover:grayscale hover:opacity-70" target="_blank">
-                        <img class="w-11" src="./images/navbar/yt-logo.svg" alt="youtube">
-                    </a>
+            <!-- sosmed (desktop) + tombol hamburger (mobile) -->
+            <div class="flex items-center gap-3">
+                <div class="hidden lg:flex items-center gap-[15px]">
+                    <a href="https://x.com/HMSI_ITS" target="_blank" class="hover:opacity-70 transition"><img class="w-11" src="./images/navbar/x-logo.svg" alt="X"></a>
+                    <a href="https://tiktok.com/@hmsi_its" target="_blank" class="hover:opacity-70 transition"><img class="w-11" src="./images/navbar/tiktok-logo.svg" alt="TikTok"></a>
+                    <a href="https://instagram.com/simetri.hmsiits" target="_blank" class="hover:opacity-70 transition"><img class="w-11" src="./images/navbar/ig-logo.svg" alt="Instagram"></a>
+                    <a href="https://youtube.com/@layarHMSI" target="_blank" class="hover:opacity-70 transition"><img class="w-11" src="./images/navbar/yt-logo.svg" alt="YouTube"></a>
                 </div>
 
-                <!--button mobile  -->
-                <button id="hamburgerBtn"
-                    class="flex lg:hidden items-center justify-center w-[48px] h-[48] bg-[#4C1C0E] rounded-lg z-[60]">
-                    <img id="iconHamburger" src="./images/navbar/menu.svg" alt="hamburger"
-                        class="h-[38.97px] w-[38.97px]">
-                    <img id="closeIcon" src="images/navbar/exit.svg" alt="exit"
-                        class="h-[38.97px] w-[38.97px] hidden">
+                <button id="hamburgerBtn" aria-label="Menu" class="flex lg:hidden items-center justify-center w-[48px] h-[48px] bg-[#4C1C0E] rounded-lg">
+                    <img id="iconHamburger" src="./images/navbar/menu.svg" alt="menu" class="h-[38px] w-[38px]">
+                    <img id="closeIcon" src="./images/navbar/exit.svg" alt="tutup" class="h-[38px] w-[38px] hidden">
                 </button>
             </div>
+
+            <!-- garis emas tipis di bawah navbar, panjangnya mengikuti seberapa jauh halaman di-scroll -->
+            <div id="progres" class="absolute bottom-0 left-0 h-[3px] w-full bg-[#F3B641] origin-left scale-x-0"></div>
         </nav>
-        <!-- screen sidebar -->
-        <div id="mobileMenu"
-            class="lg:hidden backdrop-filter backdrop-blur-md bg-opacity-40 fixed inset-0 translate-x-full z-[50] transition-transform duration-250 ease-in-out">
-            <div class="h-[90px]">
 
-            </div>
-            <ul class="flex flex-col items-center text-center py-6 text-white text-[2rem]">
-                <li class="w-full py-4">
-                    <a class="hover:underline hover:text-[#F3B641]" href="#hero">Home</a>
-
+        <!-- menu mobile (tertutup = bergeser ke kanan dan transparan) -->
+        <div id="mobileMenu" class="lg:hidden fixed inset-0 z-[50] bg-[#1a0a05]/85 backdrop-blur-md translate-x-full opacity-0 pointer-events-none transition-all duration-300">
+            <ul class="flex flex-col items-center text-center pt-[110px] text-white text-[2rem]">
+                <li class="py-4"><a class="hover:text-[#F3B641]" href="#hero">Home</a></li>
+                <li class="py-4"><a class="hover:text-[#F3B641]" href="#aboutme">About Me</a></li>
+                <li class="py-4"><a class="hover:text-[#F3B641]" href="#aktivitas">Activities</a></li>
+                <li class="py-4"><a class="hover:text-[#F3B641]" href="#experience">My Experience</a></li>
+                <li class="py-6 flex gap-6">
+                    <a href="https://instagram.com/simetri.hmsiits" target="_blank"><img src="./images/navbar/ig-logo.svg" alt="Instagram" class="w-10 h-10"></a>
+                    <a href="https://tiktok.com/@hmsi_its" target="_blank"><img src="./images/navbar/tiktok-logo.svg" alt="TikTok" class="w-10 h-10"></a>
+                    <a href="https://x.com/HMSI_ITS" target="_blank"><img src="./images/navbar/x-logo.svg" alt="X" class="w-10 h-10"></a>
+                    <a href="https://youtube.com/@layarHMSI" target="_blank"><img src="./images/navbar/yt-logo.svg" alt="YouTube" class="w-10 h-10"></a>
                 </li>
-                <li class="w-full py-4">
-                    <a class="hover:underline hover:text-[#F3B641]" href="#aboutme">About Me</a>
-
-                </li>
-                <li class="w-full py-4">
-                    <a class="hover:underline hover:text-[#F3B641]" href="#myskills">My Skills</a>
-
-                </li>
-                <li class="w-full py-4">
-                    <a class="hover:underline hover:text-[#F3B641]" href="#experience">My Experience</a>
-
-                </li>
-
-                <li class="w-full py-6 flex justify-center items-center gap-6">
-                    <!-- logo medsos -->
-                    <!-- Medsos 1 -->
-                    <a href="https://instagram.com/simetri.hmsiits" target="_blank" class="transition-opacity duration-200 hover:opacity-60">
-                        <img src="./images/navbar/ig-logo.svg" alt="ig" class="w-10 h-10 object-contain" />
-                    </a>
-                    <!-- Medsos 2 -->
-                    <a href="https://tiktok.com/@hmsi_its" target="_blank" class="transition-opacity duration-200 hover:opacity-60">
-                        <img src="./images/navbar/tiktok-logo.svg" alt="tiktok" class="w-10 h-10 object-contain" />
-                    </a>
-                    <!-- Medsos 3 -->
-                    <a href="https://x.com/HMSI_ITS" target="_blank" class="transition-opacity duration-200 hover:opacity-60">
-                        <img src="./images/navbar/x-logo.svg" alt="x" class="w-10 h-10 object-contain" />
-                    </a>
-                    <!-- Medsos 4 -->
-                    <a href="https://youtube.com/@layarHMSI" target="_blank" class="transition-opacity duration-200 hover:opacity-60">
-                        <img src="./images/navbar/yt-logo.svg" alt="yt" class="w-10 h-10 object-contain" />
-                    </a>
-                </li>
-
             </ul>
-
-
         </div>
-        <script src="./js/mobileNav.js"></script>
     </header>
 
     <main class="text-white">
-        <div class="fixed inset-0 -z-20 bg-cover bg-center bg-[url('images/hero/IGNIS.png')]"></div>
 
+        <!-- ===== LATAR BELAKANG ===== -->
+        <!-- gambar latar: bergeser pelan saat scroll (efek parallax, diatur di script) -->
+        <div id="gambarLatar" class="fixed inset-0 -z-20 bg-cover bg-center bg-[url('images/hero/IGNIS.png')]" style="will-change: transform"></div>
+        <!-- lapisan hitam: makin gelap saat scroll ke bawah -->
         <div id="bg-overlay" class="fixed inset-0 -z-10 bg-black opacity-0 pointer-events-none"></div>
+        <!-- bintang-bintang (digambar di script bawah) -->
+        <canvas id="bintang" class="fixed inset-0 -z-[5] w-full h-full pointer-events-none"></canvas>
 
-        <!-- Section 1 - Hero -->
-        <section id="hero"
-            class="w-full flex flex-col pt-[80px] md:pt-[270.5px] justify-center items-center gap-4 lg:gap-4 px-4 mb-16 md:mb-24">
-            <!-- Judul Tanpa Background -->
-            <h1
-                class="uppercase text-[3rem] sm:text-[4rem] md:text-[6rem] lg:text-[8rem] text-white text-center [-webkit-text-stroke:1px_#7A3D21] lg:[-webkit-text-stroke:2px_#7A3D21] text-shadow-[0_5px_0_#7A3D21] lg:text-shadow-[0_10px_0_#7A3D21] leading-none">
-                My Portfolio
-            </h1>
+        <!-- ===== HERO ===== -->
+        <section id="hero" class="flex flex-col items-center gap-4 px-4 pt-[130px] md:pt-[200px] lg:pt-[270px] mb-16 md:mb-24">
+            <h1 class="judul judul-hero text-center" style="font-size: clamp(3rem, 14vw, 8rem)">My Portfolio</h1>
 
-            <!-- Banner Nama (Paper Scroll) dengan Ukuran Teks yang Disesuaikan -->
-            <div
-                class="flex min-w-[338px] lg:w-[700.39px] aspect-[341/43] items-center justify-center bg-[url('images/hero/paper-scroll-hero-mobile.svg')] lg:bg-[url('images/hero/paper-scroll-hero-desktop.svg')] bg-center bg-cover lg:bg-contain bg-no-repeat pb-1.5">
-                <p class="text-[#7A3D21] text-[1.7rem] md:text-[2rem] font-times font-bold">Fadilah Alifia Ramadhani.</p>
+            <!-- banner nama -->
+            <div style="animation-delay: 0.5s" class="hero-muncul flex w-[90%] max-w-[341px] md:max-w-none md:w-[520px] lg:w-[700px] aspect-[341/43] items-center justify-center bg-[url('images/hero/paper-scroll-hero-mobile.svg')] md:bg-[url('images/hero/paper-scroll-hero-desktop.svg')] bg-center bg-contain bg-no-repeat pb-1.5">
+                <p class="text-[#7A3D21] text-[1.3rem] md:text-[1.7rem] lg:text-[2rem] font-times font-bold text-center">Fadilah Alifia Ramadhani</p>
             </div>
 
-            <!-- Tombol Explore More -->
-            <div class="flex w-full justify-center items-center transition-all duration-100 hover:brightness-90">
-                <a href="#aboutme"
-                    class="px-[51px] py-[4px] md:px-[119.5px] md:py-[8px] bg-[linear-gradient(to_bottom,#F36F41_0%,#F39241_50%,#F36F41_50%,#F39241_100%)] rounded-[8px] border-[#F3B641] border-[1px] outline-[#592918] outline-[1px] drop-shadow-[0_8px_0_#592918]">
-                    <p class="uppercase text-white text-[1.1rem] md:text-[1.75rem] md:leading-none">EXPLORE MORE</p>
-                </a>
-            </div>
+            <!-- kalimat sambutan -->
+            <p style="animation-delay: 0.7s" class="hero-muncul teks-jelas px-4 py-1 font-times text-[#F9DCB4] text-[1.1rem] md:text-[1.4rem] text-center">Welcome to my world, let's get to know each other!</p>
+
+            <!-- tombol explore -->
+            <a href="#aboutme" style="animation-delay: 0.9s"
+                class="hero-muncul mt-2 px-[51px] py-[4px] md:px-[119px] md:py-[8px] bg-[linear-gradient(to_bottom,#F36F41_0%,#F39241_50%,#F36F41_50%,#F39241_100%)] rounded-[8px] border border-[#F3B641] outline outline-1 outline-[#592918] drop-shadow-[0_8px_0_#592918] transition-all duration-150 hover:brightness-90 active:translate-y-[6px] active:drop-shadow-[0_2px_0_#592918]">
+                <p class="uppercase text-white text-[1.1rem] md:text-[1.75rem] md:leading-none">Explore More</p>
+            </a>
         </section>
 
-        <!-- Section 2 - About me -->
-        <section id="aboutme"
-            class="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 px-6 md:px-16 lg:px-[90px] mt-24 lg:mt-60 mb-16 md:mb-24">
+        <!-- ===== ABOUT ME ===== -->
+        <section id="aboutme" class="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 px-6 md:px-16 lg:px-[90px] mt-24 lg:mt-48 mb-16 md:mb-24">
 
-            <!-- Gambar/Kartu Profil -->
-            <div class="order-1 lg:order-2 shrink-0">
-                <div class="relative w-[240px] md:w-[280px] lg:w-[340px] aspect-[700/1040]">
-                    <img src="images/fotoku/my foto.png" alt="Kartu profil"
-                        class="absolute inset-0 w-full h-full z-10 pointer-events-none" />
-                </div>
-            </div>
-
-            <!-- Teks About Me -->
-            <div class="order-2 lg:order-1 flex flex-col gap-4 max-w-[560px] text-center lg:text-left">
-                <h1 class="uppercase text-[3.5rem] md:text-[4.5rem] lg:text-[6rem] text-white
-            [-webkit-text-stroke:1px_#7A3D21] lg:[-webkit-text-stroke:2px_#7A3D21]
-            text-shadow-[0_5px_0_#7A3D21] lg:text-shadow-[0_10px_0_#7A3D21] leading-none">
-                    ABOUT ME
-                    <!-- <span class="hidden lg:inline">ME</span> -->
-                </h1>
-
-                <p
-                    class="font-times text-[#F9DCB4] text-[1rem] md:text-[1.25rem] lg:text-[1.5rem] leading-snug text-justify">
-                    Halo, guys! Namaku Fadilah Alifia Ramadhani. Kalian bisa panggil aku Lifi.
-                </p>
-            </div>
-
-        </section>
-
-        <!-- Section 3 - My Skills -->
-        <section id="myskills" class="flex flex-col items-center justify-center mt-100 mb-16 md:mb-24">
-            <h1 class="text-[3.5rem] md:text-[4.5rem] lg:text-[6rem] text-white
-            [-webkit-text-stroke:1px_#7A3D21] lg:[-webkit-text-stroke:2px_#7A3D21]
-             text-shadow-[0_5px_0_#7A3D21] lg:text-shadow-[0_10px_0_#7A3D21] leading-none">
-                MY SKILLS
-            </h1>
-
-            <div class="relative">
-                <!-- Laptop/tablet -->
-                <img src="images/images/My Skills/wood plank.svg" alt="Papan kayu"
-                    class="hidden md:block lg:w-[769.08px] md:w-[500.17px]">
-                <!-- Mobile -->
-                <img src="images/images/My Skills/wood plank - mobile.svg" alt="Papan kayu" class="block md:hidden w-[25rem]">
-                <div class="absolute inset-0 flex flex-col text-left px-[3.75rem] pt-10 gap-1 text-[#592918]">
-                    <h1 class="text-[2.75rem] text-center md:text-[2.5rem] lg:text-[3.75rem]">Aku suka belajar:</h1>
-                    <ul class="font-times list-disc ml-8 text-[1.5rem] md:text-[1.5rem] lg:text-[2rem]">
-                        <li>Matematika</li>
-                        <li>Bahasa Inggris</li>
-                        <li>Biologi</li>
-                    </ul>
-                    <div class="flex w-full justify-center items-center transition-all duration-100">
-                        <a href="#experience" class="absolute bottom-[40px] md:bottom-[25px] lg:bottom-[50px] px-8 pt-[8px] rounded-[8px]
-                        bg-[linear-gradient(to_bottom,#F36F41_0%,#F39241_50%,#F36F41_50%,#F39241_100%)]
-                        border-[1px] border-[#F3B641] outline-[1px] outline-[#592918]
-                        drop-shadow-[0_5px_0_#592918] hover:brightness-90">
-                            <p class="text-white text-[2rem] md:text-[1.5rem] lg:text-[2.5rem] leading-none">My
-                                Experience</p>
-                        </a>
+            <!-- id card: klik untuk membalik (di HP dan desktop) -->
+            <div data-muncul class="order-1 lg:order-2 flex flex-col items-center gap-4">
+                <div id="kartuID" class="kartu w-[240px] md:w-[280px] lg:w-[340px] aspect-[700/1040]">
+                    <div class="kartu-dalam">
+                        <!-- sisi depan -->
+                        <div class="sisi">
+                            <img src="images/fotoku/my foto.png" alt="Kartu profil Fadilah Alifia Ramadhani" class="w-full h-full">
+                        </div>
+                        <!-- sisi belakang -->
+                        <div class="sisi belakang flex flex-col items-center justify-center gap-4 p-6 text-center rounded-2xl border-4 border-[#F3B641] bg-gradient-to-b from-[#F36F41] to-[#b8324a] text-[#F9DCB4]">
+                            <p class="text-[1.6rem] md:text-[2rem] text-white leading-tight">Fadilah Alifia Ramadhani</p>
+                            <p class="font-times text-[1.1rem] md:text-[1.3rem]">Hometown: Surabaya</p>
+                            <p class="font-times text-[1.1rem] md:text-[1.3rem]">Birthday: August 2, 2010</p>
+                        </div>
                     </div>
                 </div>
+                <p class="teks-jelas px-4 py-1 font-times text-[#F9DCB4]">Tap or click the card to flip it</p>
+            </div>
+
+            <!-- teks perkenalan -->
+            <div data-muncul class="order-2 lg:order-1 flex flex-col gap-4 max-w-[560px]">
+                <h2 class="judul text-center lg:text-left">About Me</h2>
+                <p class="teks-jelas p-4 font-times text-[#F9DCB4] text-[1.1rem] md:text-[1.25rem] lg:text-[1.5rem] leading-snug text-center lg:text-left">
+                    Hi there! I'm Fadilah Alifia Ramadhani, but you can call me Lifi. Welcome to my digital space! I'm a curious person who loves trying new things, and I'm always up for a new adventure.
+                </p>
             </div>
         </section>
 
-        <!-- Section 4 -  My Experience -->
-        <section id="experience" class="mt-100 mb-50">
-            <div class="flex flex-col gap-[1rem] items-center">
-                <h1
-                    class="text-[3.5rem] md:text-[4.5rem] lg:text-[6rem] text-white [-webkit-text-stroke:1px_#7A3D21] lg:[-webkit-text-stroke:2px_#7A3D21] text-shadow-[0_5px_0_#7A3D21] text-center">
-                    MY EXPERIENCE</h1>
-                <div class="flex flex-col md:flex-row gap-[1rem]">
-                    <img class="w-[22.5rem] lg:w-[30rem]" src=images/fotoku/foto1.png alt="Deskripsi" foto 1>
-                    <img class="w-[22.5rem] lg:w-[30rem]" src=images/fotoku/foto2.png alt="Deskripsi" foto 2>
+        <!-- ===== FAVORITE ACTIVITIES =====
+             Urutan dari atas: Family Time, Hanging Out, Watching Movies, Playing Games.
+             Klik kartu untuk membuka isinya, kartu lain otomatis menutup. -->
+        <section id="aktivitas" class="flex flex-col items-center px-4 md:px-16 mt-24 mb-16 md:mb-24">
+            <h2 data-muncul class="judul text-center mb-3">Favorite Activities</h2>
+            <p data-muncul class="teks-jelas px-4 py-1 font-times text-[#F9DCB4] text-center text-[1.1rem] mb-10">Click a card to reveal more</p>
+
+            <div class="flex flex-col gap-5 w-full max-w-[720px]">
+
+                <!-- 1. Family Time (terbuka dari awal) -->
+                <div data-muncul class="aktivitas buka">
+                    <button aria-expanded="true" class="w-full flex items-center gap-4 p-4 text-left">
+                        <span class="ikon flex items-center justify-center w-14 h-14 shrink-0 rounded-full bg-[#3a1a0e] text-[#F3B641]">
+                            <!-- siluet keluarga -->
+                            <svg viewBox="0 0 64 64" class="w-8 h-8" fill="currentColor">
+                                <circle cx="16" cy="14" r="6"/>
+                                <path d="M8 56V30c0-4 3-7 8-7s8 3 8 7v26z"/>
+                                <circle cx="48" cy="14" r="6"/>
+                                <path d="M40 56V30c0-4 3-7 8-7s8 3 8 7v26z"/>
+                                <circle cx="32" cy="32" r="5"/>
+                                <path d="M26 56V44c0-3 2-5 6-5s6 2 6 5v12z"/>
+                                <path d="M32 20c-6-4-8-7-8-10a4 4 0 0 1 8-1 4 4 0 0 1 8 1c0 3-2 6-8 10z"/>
+                            </svg>
+                        </span>
+                        <span class="flex-1 text-[1.6rem] lg:text-[2rem] text-white leading-tight">Family Time</span>
+                        <span class="panah text-[#F3B641]">▼</span>
+                    </button>
+                    <div class="isi"><div>
+                        <p class="font-times text-[#F9DCB4] text-[1.1rem] lg:text-[1.25rem] leading-snug px-5 pb-5">Aku sangat suka berkumpul bersama keluargaku. Aku senang melakukan berbagai kegiatan dan mengunjungi tempat-tempat baru bersama mereka.</p>
+                    </div></div>
                 </div>
-                <div class="flex flex-col md:flex-row gap-[1rem]">
-                    <img class="w-[22.5rem] lg:w-[30rem]" src=images/fotoku/foto3.png alt="Deskripsi foto 3">
-                    <img class="w-[22.5rem] lg:w-[30rem]" src=images/fotoku/foto1.png alt="Deskripsi foto 4">
+
+                <!-- 2. Hanging Out With Friends -->
+                <div data-muncul class="aktivitas">
+                    <button aria-expanded="false" class="w-full flex items-center gap-4 p-4 text-left">
+                        <span class="ikon flex items-center justify-center w-14 h-14 shrink-0 rounded-full bg-[#3a1a0e] text-[#F3B641]">
+                            <!-- siluet tiga teman -->
+                            <svg viewBox="0 0 64 64" class="w-8 h-8" fill="currentColor">
+                                <circle cx="13" cy="26" r="6"/>
+                                <path d="M3 52c0-8 4-14 10-14s10 6 10 14z"/>
+                                <circle cx="51" cy="26" r="6"/>
+                                <path d="M41 52c0-8 4-14 10-14s10 6 10 14z"/>
+                                <circle class="pisah" cx="32" cy="20" r="8"/>
+                                <path class="pisah" d="M17 56c0-11 6-19 15-19s15 8 15 19z"/>
+                            </svg>
+                        </span>
+                        <span class="flex-1 text-[1.6rem] lg:text-[2rem] text-white leading-tight">Hanging Out With Friends</span>
+                        <span class="panah text-[#F3B641]">▼</span>
+                    </button>
+                    <div class="isi"><div>
+                        <p class="font-times text-[#F9DCB4] text-[1.1rem] lg:text-[1.25rem] leading-snug px-5 pb-5">Aku suka berkumpul bersama teman-temanku karena itu sangat menyenangkan.</p>
+                    </div></div>
                 </div>
+
+                <!-- 3. Watching Movies -->
+                <div data-muncul class="aktivitas">
+                    <button aria-expanded="false" class="w-full flex items-center gap-4 p-4 text-left">
+                        <span class="ikon flex items-center justify-center w-14 h-14 shrink-0 rounded-full bg-[#3a1a0e] text-[#F3B641]">
+                            <!-- siluet papan klakson film -->
+                            <svg viewBox="0 0 64 64" class="w-8 h-8" fill="currentColor">
+                                <path d="M6 12l44-8 2 10-44 8z"/>
+                                <path fill-rule="evenodd" d="M8 26h48v28a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z M28 33v18l15-9z"/>
+                            </svg>
+                        </span>
+                        <span class="flex-1 text-[1.6rem] lg:text-[2rem] text-white leading-tight">Watching Movies</span>
+                        <span class="panah text-[#F3B641]">▼</span>
+                    </button>
+                    <div class="isi"><div>
+                        <div class="px-5 pb-5">
+                            <p class="text-[#F3B641] text-[1.2rem] mb-2">Action • Thriller • Marvel</p>
+                            <p class="font-times text-[#F9DCB4] text-[1.1rem] lg:text-[1.25rem] leading-snug">Aku suka menonton film bergenre action dan thriller.</p>
+                        </div>
+                    </div></div>
+                </div>
+
+                <!-- 4. Playing Games -->
+                <div data-muncul class="aktivitas">
+                    <button aria-expanded="false" class="w-full flex items-center gap-4 p-4 text-left">
+                        <span class="ikon flex items-center justify-center w-14 h-14 shrink-0 rounded-full bg-[#3a1a0e] text-[#F3B641]">
+                            <!-- siluet stik game -->
+                            <svg viewBox="0 0 64 64" class="w-8 h-8" fill="currentColor">
+                                <path fill-rule="evenodd" d="M20 18h24c6 0 10 4 12 12l4 14c1.5 5-1 10-6 10-3 0-5-1.5-7-4l-3-4H20l-3 4c-2 2.5-4 4-7 4-5 0-7.5-5-6-10l4-14c2-8 6-12 12-12z M22 26h4v4h4v4h-4v4h-4v-4h-4v-4h4z M42 25a3 3 0 1 0 0 6a3 3 0 1 0 0-6z M49 32a3 3 0 1 0 0 6a3 3 0 1 0 0-6z"/>
+                            </svg>
+                        </span>
+                        <span class="flex-1 text-[1.6rem] lg:text-[2rem] text-white leading-tight">Playing Games</span>
+                        <span class="panah text-[#F3B641]">▼</span>
+                    </button>
+                    <div class="isi"><div>
+                        <div class="px-5 pb-5">
+                            <p class="text-[#F3B641] text-[1.2rem] mb-2">PUBG • Roblox • Hay Day</p>
+                            <p class="font-times text-[#F9DCB4] text-[1.1rem] lg:text-[1.25rem] leading-snug">Aku suka bermain game bersama teman-temanku ketika ada waktu luang.</p>
+                        </div>
+                    </div></div>
+                </div>
+
             </div>
         </section>
-        <script src="js/bgScrollEffect.js"></script>
+
+        <!-- ===== MY EXPERIENCE ===== -->
+        <section id="experience" class="px-4 mt-24 mb-24 md:mb-32 flex flex-col items-center gap-6">
+            <h2 data-muncul class="judul text-center">My Experience</h2>
+
+            <!-- foto terangkat saat di-hover (tidak di-zoom supaya tidak terpotong) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 justify-items-center">
+                <img data-muncul class="w-full max-w-[22.5rem] lg:max-w-[30rem] rounded-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_0_25px_rgba(243,182,65,0.5)]" src="images/fotoku/foto1.png" alt="Experience photo 1" loading="lazy">
+                <img data-muncul class="w-full max-w-[22.5rem] lg:max-w-[30rem] rounded-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_0_25px_rgba(243,182,65,0.5)]" src="images/fotoku/foto2.png" alt="Experience photo 2" loading="lazy">
+                <img data-muncul class="w-full max-w-[22.5rem] lg:max-w-[30rem] rounded-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_0_25px_rgba(243,182,65,0.5)]" src="images/fotoku/foto3.png" alt="Experience photo 3" loading="lazy">
+                <img data-muncul class="w-full max-w-[22.5rem] lg:max-w-[30rem] rounded-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_0_25px_rgba(243,182,65,0.5)]" src="images/fotoku/foto1.png" alt="Experience photo 4" loading="lazy">
+            </div>
+        </section>
     </main>
-    <!-- Footer -->
-    <footer class="w-full h-[500px] md:h-[350px] lg:h-[600px]
-        bg-[url('images/footer/bg-footer.png')] bg-cover bg-center px-4 py-8 lg:px-[90px]
-        lg:py-[88px] lg:border-t-[20px] lg:border-t-[#7A3D21] flex justify-center items-center">
 
-        <!-- FRAME Parent -->
-        <div class="flex flex-col w-full h-[440px] md:w-170 lg:w-[1000px] lg:h-full
-        bg-[url('images/footer/frame-footer-mobile.png')]
-        md:bg-[url('images/footer/frame-footer-desktop.png')]
-        bg-center bg-contain bg-no-repeat px-6 py-10 lg:px-[20px] lg:py-10 items-center justify-center">
-
-            <!-- NAVBAR -->
-            <div class="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6">
-
-                <a class="text-[#C07E4E] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#hero">Home</a>
-
-                <a class="text-[#C07E4E] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#aboutme">About
-                    me</a>
-
-                <a class="text-[#C07E4E] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#myskills">My
-                    Skills</a>
-
-                <a class="text-[#C07E4E] hover:text-[#F9DCB4] text-[1.5rem] lg:text-[32px]" href="#experience">My
-                    Experience</a>
-
+    <!-- ===== FOOTER ===== -->
+    <footer class="w-full h-[500px] md:h-[350px] lg:h-[600px] bg-[url('images/footer/bg-footer.png')] bg-cover bg-center px-4 py-8 lg:px-[90px] lg:py-[88px] lg:border-t-[20px] lg:border-t-[#7A3D21] flex justify-center items-center">
+        <div class="flex flex-col w-full h-[440px] md:w-[680px] lg:w-[1000px] lg:h-full bg-[url('images/footer/frame-footer-mobile.png')] md:bg-[url('images/footer/frame-footer-desktop.png')] bg-center bg-contain bg-no-repeat px-6 py-10 items-center justify-center">
+            <div class="flex flex-col md:flex-row items-center gap-2 md:gap-6">
+                <a class="text-[#C07E4E] hover:text-[#F9DCB4] transition-colors text-[1.5rem] lg:text-[32px]" href="#hero">Home</a>
+                <a class="text-[#C07E4E] hover:text-[#F9DCB4] transition-colors text-[1.5rem] lg:text-[32px]" href="#aboutme">About Me</a>
+                <a class="text-[#C07E4E] hover:text-[#F9DCB4] transition-colors text-[1.5rem] lg:text-[32px]" href="#aktivitas">Activities</a>
+                <a class="text-[#C07E4E] hover:text-[#F9DCB4] transition-colors text-[1.5rem] lg:text-[32px]" href="#experience">My Experience</a>
             </div>
-
-            <!-- Copyright -->
-            <p class="font-times font-bold text-[#F9DCB4] text-[15px] lg:text-[20px] mt-4">
-                &copy; SIMETRI HMSI ITS
-            </p>
-
+            <p class="font-times font-bold text-[#F9DCB4] text-[15px] lg:text-[20px] mt-4">&copy; SIMETRI HMSI ITS</p>
         </div>
     </footer>
 
+    <script>
+        // ----- menu mobile: buka/tutup -----
+        var menu = document.getElementById('mobileMenu');
+        var ikonBuka = document.getElementById('iconHamburger');
+        var ikonTutup = document.getElementById('closeIcon');
+
+        function tampilMenu(buka) {
+            menu.classList.toggle('translate-x-full', !buka);
+            menu.classList.toggle('opacity-0', !buka);
+            menu.classList.toggle('pointer-events-none', !buka);
+            ikonBuka.classList.toggle('hidden', buka);
+            ikonTutup.classList.toggle('hidden', !buka);
+            document.body.style.overflow = buka ? 'hidden' : ''; // kunci scroll saat menu terbuka
+        }
+
+        document.getElementById('hamburgerBtn').onclick = function () {
+            tampilMenu(menu.classList.contains('translate-x-full'));
+        };
+
+        // klik salah satu link, menu menutup
+        menu.querySelectorAll('a[href^="#"]').forEach(function (link) {
+            link.onclick = function () { tampilMenu(false); };
+        });
+
+        // ----- navbar jadi blur setelah di-scroll -----
+        var navbar = document.getElementById('navbar');
+
+        function saatScroll() {
+            navbar.classList.toggle('gulir', window.scrollY > 30);
+        }
+        window.addEventListener('scroll', saatScroll);
+        saatScroll();
+
+        // ----- kartu aktivitas: satu kartu terbuka dalam satu waktu -----
+        var semuaAktivitas = document.querySelectorAll('.aktivitas');
+
+        semuaAktivitas.forEach(function (kartu) {
+            var tombol = kartu.querySelector('button');
+
+            tombol.onclick = function () {
+                var sudahBuka = kartu.classList.contains('buka');
+
+                // tutup semua dulu
+                semuaAktivitas.forEach(function (k) {
+                    k.classList.remove('buka');
+                    k.querySelector('button').setAttribute('aria-expanded', 'false');
+                });
+
+                // buka yang diklik (kecuali tadi memang sedang terbuka)
+                if (!sudahBuka) {
+                    kartu.classList.add('buka');
+                    tombol.setAttribute('aria-expanded', 'true');
+                }
+            };
+        });
+
+        // ----- id card dibalik -----
+        var kartuID = document.getElementById('kartuID');
+        kartuID.onclick = function () {
+            kartuID.classList.toggle('terbalik');
+        };
+
+        // ----- elemen muncul pelan saat masuk layar -----
+        var pengamat = new IntersectionObserver(function (daftar) {
+            daftar.forEach(function (item) {
+                if (item.isIntersecting) {
+                    item.target.classList.add('tampil');
+                    pengamat.unobserve(item.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('[data-muncul]').forEach(function (el) {
+            el.classList.add('muncul');
+            pengamat.observe(el);
+        });
+
+        // ----- bintang, bintang jatuh, dan parallax latar -----
+        var kanvas = document.getElementById('bintang');
+        var ctx = kanvas.getContext('2d');
+        var gambarLatar = document.getElementById('gambarLatar');
+        var gelap = document.getElementById('bg-overlay');
+        var progres = document.getElementById('progres');
+
+        var lebar = 0;
+        var tinggi = 0;
+        var daftarBintang = [];
+        var posisi = 0;           // posisi scroll yang sudah dihaluskan
+        var bintangJatuh = null;
+        var jatuhBerikut = 3000;  // kapan bintang jatuh muncul lagi (ms)
+
+        function buatBintang() {
+            daftarBintang = [];
+            for (var i = 0; i < 100; i++) {
+                daftarBintang.push({
+                    x: Math.random() * lebar,
+                    y: Math.random() * tinggi,
+                    ukuran: Math.random() * 1.5 + 0.5,
+                    fase: Math.random() * 6,
+                    dalam: Math.random() + 0.3 // makin besar, makin jauh bergeser saat scroll
+                });
+            }
+        }
+
+        // ukuran kanvas disesuaikan dengan layar (dikali rasio supaya tetap tajam di HP)
+        function ukuranKanvas() {
+            var lebarLama = lebar;
+            var rasio = window.devicePixelRatio || 1;
+            lebar = window.innerWidth;
+            tinggi = window.innerHeight;
+            kanvas.width = lebar * rasio;
+            kanvas.height = tinggi * rasio;
+            ctx.setTransform(rasio, 0, 0, rasio, 0, 0);
+
+            // bintang dibuat ulang hanya kalau lebar berubah,
+            // supaya tidak acak ulang saat address bar HP naik-turun
+            if (lebar !== lebarLama) buatBintang();
+        }
+
+        // fungsi ini jalan terus ~60x per detik
+        function gambarBintang(waktu) {
+            // posisi mengejar scroll pelan-pelan, jadi gerakannya halus
+            posisi += (window.scrollY - posisi) * 0.08;
+            var sisa = Math.max(document.body.scrollHeight - window.innerHeight, 1);
+            var persen = Math.min(posisi / sisa, 1);
+
+            // parallax: latar bergeser pelan, makin gelap, dan garis progres memanjang
+            gambarLatar.style.transform = 'translateY(' + (-persen * 40) + 'px) scale(1.15)';
+            gelap.style.opacity = persen * 0.7;
+            progres.style.transform = 'scaleX(' + persen + ')';
+
+            // bintang berkelip, ikut bergeser sedikit saat scroll
+            ctx.clearRect(0, 0, lebar, tinggi);
+            ctx.fillStyle = '#fff';
+            daftarBintang.forEach(function (b) {
+                var y = (b.y - posisi * b.dalam * 0.2) % tinggi;
+                if (y < 0) y += tinggi;
+                ctx.globalAlpha = 0.5 + 0.5 * Math.sin(waktu / 800 + b.fase);
+                ctx.beginPath();
+                ctx.arc(b.x, y, b.ukuran, 0, 7);
+                ctx.fill();
+            });
+
+            // bintang jatuh muncul sesekali
+            if (!bintangJatuh && waktu > jatuhBerikut) {
+                bintangJatuh = { x: Math.random() * lebar, y: Math.random() * tinggi * 0.4, umur: 0 };
+            }
+            if (bintangJatuh) {
+                var s = bintangJatuh;
+                s.x -= 8;
+                s.y += 4;
+                s.umur++;
+                ctx.globalAlpha = 1 - s.umur / 60;
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(s.x + 70, s.y - 35);
+                ctx.stroke();
+                if (s.umur >= 60) {
+                    bintangJatuh = null;
+                    jatuhBerikut = waktu + 3000 + Math.random() * 4000;
+                }
+            }
+
+            requestAnimationFrame(gambarBintang);
+        }
+
+        // saat layar berubah ukuran / HP diputar
+        window.onresize = function () {
+            ukuranKanvas();
+            if (window.innerWidth >= 1024) tampilMenu(false); // menu mobile ditutup kalau layar jadi lebar
+        };
+
+        ukuranKanvas();
+        requestAnimationFrame(gambarBintang);
+    </script>
 </body>
 
 </html>
